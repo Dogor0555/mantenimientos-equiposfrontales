@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #1A1A1A; }
+::-webkit-scrollbar-thumb { background: #3A3A3A; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #F5C518; }
+
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+
+@layer components {
+  .label { @apply block text-xs font-mono text-gray-500 uppercase tracking-widest mb-1.5; }
+
+  .input-base {
+    @apply w-full bg-dark-mid border border-dark-border rounded text-gray-100
+           font-sans text-sm px-3 py-2.5 outline-none transition-colors
+           focus:border-amarillo focus:ring-1 focus:ring-amarillo/20;
+  }
+
+  .card { @apply bg-dark-card border border-dark-border rounded-lg overflow-hidden; }
+
+  .section-header {
+    @apply bg-dark-mid px-5 py-3 border-b border-dark-border
+           font-display text-lg tracking-widest text-amarillo flex items-center gap-2;
+  }
+
+  .btn-primary {
+    @apply bg-amarillo text-black font-display text-xl tracking-widest
+           px-8 py-3 rounded transition-all duration-150
+           hover:bg-yellow-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amarillo/20
+           active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-dark-mid border border-dark-border text-gray-400 font-display text-xl tracking-widest
+           px-6 py-3 rounded transition-colors hover:text-gray-100 hover:border-gray-400;
+  }
+
+  .btn-ghost {
+    @apply text-gray-400 font-mono text-xs px-3 py-1.5 rounded border border-dark-border
+           hover:border-amarillo hover:text-amarillo transition-colors;
+  }
+
+  .tag { @apply font-mono text-xs px-2 py-0.5 rounded; }
+}
