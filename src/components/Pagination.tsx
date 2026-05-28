@@ -89,7 +89,7 @@ export default function Pagination({
             className="flex items-center gap-2 px-3 py-2 rounded bg-dark-card border border-dark-border text-gray-300 hover:text-amarillo hover:border-amarillo disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <FaChevronLeft className="text-xs" />
-            <span className="hidden sm:inline text-xs font-mono">Anterior</span>
+            <span className="hidden sm:inline text-xs font-mono">Anteriorr</span>
           </button>
 
           {pageButtons.map((btn, idx) =>
