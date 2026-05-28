@@ -1,7 +1,8 @@
 // app/admin/_components/AdminDashboardClient.tsx
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import Image from 'next/image'
@@ -12,6 +13,7 @@ import clsx from 'clsx'
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import Pagination from '@/components/Pagination'
 import { 
   FaClipboardList, FaOilCan, FaWind, FaTractor, FaUser, 
   FaCamera, FaExclamationTriangle, FaSearch, FaTimes,
@@ -29,9 +31,17 @@ import ModalRevision from './RevisionModal'
 import RevisionStatusBadge from './RevisionStatusBadge'
 import SeguimientoStatus from './SeguimientoStatus'
 
+type PaginationData = {
+  total: number
+  page: number
+  itemsPerPage: number
+}
+
 type Props = {
   checklist: Checklist[]
+  checklistPagination: PaginationData
   mantenimientos: Mantenimiento[]
+  mantenimientosPagination: PaginationData
 }
 
 type TabType = 'checklist' | 'mantenimiento'
@@ -41,8 +51,19 @@ const EQUIPOS_MONTACARGA = ['MONTACARGA_TOYOTA', 'MONTACARGA_CATERPILLAR']
 
 const esMontacarga = (equipo: string) => EQUIPOS_MONTACARGA.includes(equipo)
 
-export default function AdminDashboardClient({ checklist, mantenimientos }: Props) {
+export default function AdminDashboardClient({ 
+  checklist, 
+  checklistPagination,
+  mantenimientos,
+  mantenimientosPagination
+}: Props) {
+  const router = useRouter()
+  
   const [activeTab, setActiveTab] = useState<TabType>('checklist')
+  
+  // Paginación
+  const [checklistPage, setChecklistPage] = useState(checklistPagination.page)
+  const [mantenimientoPage, setMantenimientoPage] = useState(mantenimientosPagination.page)
   
   // Filtros Checklist
   const [searchChecklist, setSearchChecklist] = useState('')
@@ -171,6 +192,28 @@ export default function AdminDashboardClient({ checklist, mantenimientos }: Prop
 
     window.location.reload()
   }
+
+  // Handlers de paginación
+  const handleChecklistPageChange = useCallback((page: number) => {
+    setChecklistPage(page)
+    router.push(`?checklistPage=${page}&mantenimientoPage=${mantenimientoPage}`, { scroll: false })
+  }, [mantenimientoPage, router])
+
+  const handleMantenimientoPageChange = useCallback((page: number) => {
+    setMantenimientoPage(page)
+    router.push(`?checklistPage=${checklistPage}&mantenimientoPage=${page}`, { scroll: false })
+  }, [checklistPage, router])
+
+  // Reiniciar a página 1 cuando se cambian filtros
+  const resetChecklistPagination = useCallback(() => {
+    setChecklistPage(1)
+    router.push(`?checklistPage=1&mantenimientoPage=${mantenimientoPage}`, { scroll: false })
+  }, [mantenimientoPage, router])
+
+  const resetMantenimientoPagination = useCallback(() => {
+    setMantenimientoPage(1)
+    router.push(`?checklistPage=${checklistPage}&mantenimientoPage=1`, { scroll: false })
+  }, [checklistPage, router])
 
   const filteredChecklist = useMemo(() => {
     return checklist.filter(r => {
@@ -896,6 +939,15 @@ export default function AdminDashboardClient({ checklist, mantenimientos }: Prop
     }
   }
 
+  // Reiniciar paginación cuando cambien filtros
+  useEffect(() => {
+    resetChecklistPagination()
+  }, [searchChecklist, filterEquipoChecklist, filterOperadorChecklist, filterTurnoChecklist, filterFechaDesdeChecklist, filterFechaHastaChecklist, resetChecklistPagination])
+
+  useEffect(() => {
+    resetMantenimientoPagination()
+  }, [searchMantenimiento, filterEquipoMantenimiento, filterOperadorMantenimiento, filterTurnoMantenimiento, filterFechaDesdeMantenimiento, filterFechaHastaMantenimiento, resetMantenimientoPagination])
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       {/* Stats */}
@@ -1127,6 +1179,15 @@ export default function AdminDashboardClient({ checklist, mantenimientos }: Prop
               </tbody>
             </table>
           </div>
+
+          {/* Paginación Checklist */}
+          <Pagination
+            currentPage={checklistPage}
+            totalPages={Math.ceil(checklistPagination.total / checklistPagination.itemsPerPage)}
+            totalItems={checklistPagination.total}
+            itemsPerPage={checklistPagination.itemsPerPage}
+            onPageChange={handleChecklistPageChange}
+          />
         </div>
       )}
 
@@ -1257,6 +1318,15 @@ export default function AdminDashboardClient({ checklist, mantenimientos }: Prop
               </tbody>
             </table>
           </div>
+
+          {/* Paginación Mantenimiento */}
+          <Pagination
+            currentPage={mantenimientoPage}
+            totalPages={Math.ceil(mantenimientosPagination.total / mantenimientosPagination.itemsPerPage)}
+            totalItems={mantenimientosPagination.total}
+            itemsPerPage={mantenimientosPagination.itemsPerPage}
+            onPageChange={handleMantenimientoPageChange}
+          />
         </div>
       )}
 
