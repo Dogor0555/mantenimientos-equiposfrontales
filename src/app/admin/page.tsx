@@ -4,7 +4,7 @@ import AdminDashboardClient from './_components/AdminDashboardClient'
 
 export const revalidate = 0
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 5
 
 async function getChecklistData(page: number = 1) {
   const supabase = createClient()
